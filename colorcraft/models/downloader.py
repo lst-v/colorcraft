@@ -3,7 +3,7 @@ import sys
 import urllib.request
 from pathlib import Path
 
-CACHE_DIR = Path.home() / ".cache" / "color_page" / "models"
+CACHE_DIR = Path.home() / ".cache" / "colorcraft" / "models"
 
 MODEL_REGISTRY = {
     "hed": {
@@ -33,7 +33,7 @@ def _download(url: str, dest: Path) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     tmp = dest.with_suffix(dest.suffix + ".tmp")
 
-    req = urllib.request.Request(url, headers={"User-Agent": "color-page/0.2.0"})
+    req = urllib.request.Request(url, headers={"User-Agent": "colorcraft/0.3.0"})
     with urllib.request.urlopen(req, timeout=120) as resp:
         total = int(resp.headers.get("Content-Length", 0))
         downloaded = 0

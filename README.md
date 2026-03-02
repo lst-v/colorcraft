@@ -1,4 +1,4 @@
-# color-page
+# colorcraft
 
 Convert images into printable coloring pages for kids.
 
@@ -19,29 +19,29 @@ pip install -e ".[stability]"
 ## Usage
 
 ```bash
-color-page <input-image> [options]
+colorcraft <input-image> [options]
 ```
 
 ### Basic examples
 
 ```bash
 # Using OpenAI (default requires OPENAI_API_KEY)
-color-page photo.jpg -m openai
+colorcraft photo.jpg -m openai
 
 # Using Stability AI (requires STABILITY_API_KEY)
-color-page photo.jpg -m stability
+colorcraft photo.jpg -m stability
 
 # Using local Canny edge detection (no API key needed)
-color-page photo.jpg -m canny
+colorcraft photo.jpg -m canny
 
 # Using HED edge detection (downloads model on first run)
-color-page photo.jpg -m hed
+colorcraft photo.jpg -m hed
 ```
 
 Output is saved to the `output/` directory by default. Use `-o` to specify a custom path:
 
 ```bash
-color-page photo.jpg -m openai -o my_coloring_page.png
+colorcraft photo.jpg -m openai -o my_coloring_page.png
 ```
 
 ### Options
@@ -88,7 +88,7 @@ Local edge detection using OpenCV's Canny algorithm. Fast, free, no API key need
 Holistically-Nested Edge Detection using a deep learning model. Produces smoother edges than Canny. Requires a one-time model download:
 
 ```bash
-color-page --download hed
+colorcraft --download hed
 ```
 
 ## Supported formats

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import json
 import os
 import urllib.request
@@ -11,73 +12,73 @@ import numpy as np
 from .base import EdgeDetectionBackend
 
 DEFAULT_PROMPT = (
-    "Coloring book page for children, only black outlines on pure white background, "
-    "no shading, no gradients, no gray tones, no filled areas, no solid black regions, "
-    "every shape must be empty with clean black outlines only, "
-    "pure black and white only, no off-white, no gray, "
-    "high contrast line art, simple and clear"
+    "Trace the exact outlines of this image to create a coloring book page for children. "
+    "Do NOT add, remove, or reposition any objects — reproduce the scene exactly as-is. "
+    "Only black outlines on pure white background, "
+    "no shading, no gradients, no gray tones, no filled areas, no solid black regions. "
+    "Every shape must be empty with clean black outlines only. "
+    "Pure black and white only, high contrast line art, simple and clear."
 )
 
 
-class StabilityBackend(EdgeDetectionBackend):
+class OpenAIBackend(EdgeDetectionBackend):
     skip_postprocess = True
 
     def __init__(
         self,
         api_key: str | None = None,
-        control_strength: float = 0.7,
         prompt: str | None = None,
+        quality: str = "high",
+        size: str = "auto",
     ):
-        self.api_key = api_key or os.environ.get("STABILITY_API_KEY")
+        self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError(
-                "Stability API key required. Pass api_key= or set STABILITY_API_KEY env var."
+                "OpenAI API key required. Pass api_key= or set OPENAI_API_KEY env var."
             )
-        self.control_strength = control_strength
         self.prompt = prompt or DEFAULT_PROMPT
+        self.quality = quality
+        self.size = size
 
     def is_available(self) -> bool:
         return bool(self.api_key)
 
     def detect_edges(self, image: np.ndarray) -> np.ndarray:
-        # Encode input image to PNG bytes
         success, png_buf = cv2.imencode(".png", image)
         if not success:
             raise RuntimeError("Failed to encode image to PNG")
         png_bytes = png_buf.tobytes()
 
-        # Build multipart/form-data request
         boundary = uuid4().hex
         body = _build_multipart(
             boundary,
             fields={
+                "model": "gpt-image-1.5",
                 "prompt": self.prompt,
-                "control_strength": str(self.control_strength),
-                "style_preset": "line-art",
-                "output_format": "png",
+                "quality": self.quality,
+                "size": self.size,
             },
-            file_field="image",
+            file_field="image[]",
             file_name="input.png",
             file_bytes=png_bytes,
             file_content_type="image/png",
         )
 
-        url = "https://api.stability.ai/v2beta/stable-image/control/sketch"
+        url = "https://api.openai.com/v1/images/edits"
         req = urllib.request.Request(
             url,
             data=body,
             headers={
                 "Authorization": f"Bearer {self.api_key}",
-                "Accept": "image/*",
                 "Content-Type": f"multipart/form-data; boundary={boundary}",
-                "User-Agent": "color-page/0.3.0",
+                "User-Agent": "colorcraft/0.3.0",
             },
             method="POST",
         )
 
         try:
-            with urllib.request.urlopen(req) as resp:
-                resp_bytes = resp.read()
+            with urllib.request.urlopen(req, timeout=120) as resp:
+                resp_body = resp.read()
         except urllib.error.HTTPError as e:
             error_body = e.read().decode("utf-8", errors="replace")
             try:
@@ -85,14 +86,17 @@ class StabilityBackend(EdgeDetectionBackend):
             except json.JSONDecodeError:
                 detail = error_body
             raise RuntimeError(
-                f"Stability API error {e.code}: {detail}"
+                f"OpenAI API error {e.code}: {detail}"
             ) from e
 
-        # Decode response PNG to grayscale numpy array
-        arr = np.frombuffer(resp_bytes, dtype=np.uint8)
+        data = json.loads(resp_body)
+        b64_image = data["data"][0]["b64_json"]
+        image_bytes = base64.b64decode(b64_image)
+
+        arr = np.frombuffer(image_bytes, dtype=np.uint8)
         img = cv2.imdecode(arr, cv2.IMREAD_GRAYSCALE)
         if img is None:
-            raise RuntimeError("Failed to decode Stability API response as image")
+            raise RuntimeError("Failed to decode OpenAI API response as image")
         return img
 
 
