@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "color-page"
+version = "0.3.0"
+description = "Convert images to printable coloring pages for kids"
+requires-python = ">=3.8"
+dependencies = [
+    "opencv-python>=4.8.0",
+    "Pillow>=10.0.0",
+    "numpy>=1.24.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+stability = ["httpx>=0.24.0"]
+
+[project.scripts]
+color-page = "color_page.cli:main"
