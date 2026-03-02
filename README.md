@@ -53,6 +53,7 @@ colorcraft photo.jpg -m openai -o my_coloring_page.png
 | `-l`, `--line-thickness` | Line thickness 1-5 | `2` |
 | `--api-key` | API key (alternative to env var) | — |
 | `--prompt` | Custom prompt for AI backends | — |
+| `--openai-model` | OpenAI image model | `gpt-image-1.5` |
 | `--control-strength` | Stability control strength 0.0-1.0 | `0.7` |
 | `-t`, `--threshold-low` | Canny low threshold | `50` |
 | `-T`, `--threshold-high` | Canny high threshold | `150` |
@@ -73,7 +74,20 @@ STABILITY_API_KEY=sk-...
 
 ### OpenAI (`-m openai`)
 
-Uses OpenAI's `gpt-image-1.5` model to generate coloring pages via the image editing API. Produces clean line art that closely follows the source image.
+Uses OpenAI's image editing API to generate coloring pages. Defaults to `gpt-image-1.5` which produces the most faithful line art. Use `--openai-model` to pick a different model:
+
+```bash
+# Default (best quality)
+colorcraft photo.jpg -m openai
+
+# Use gpt-image-1 (cheaper)
+colorcraft photo.jpg -m openai --openai-model gpt-image-1
+
+# Use the mini variant (fastest, cheapest)
+colorcraft photo.jpg -m openai --openai-model gpt-image-1-mini
+```
+
+Available models: `gpt-image-1.5`, `gpt-image-1`, `gpt-image-1-mini`.
 
 ### Stability AI (`-m stability`)
 

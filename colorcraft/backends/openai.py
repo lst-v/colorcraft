@@ -27,6 +27,7 @@ class OpenAIBackend(EdgeDetectionBackend):
     def __init__(
         self,
         api_key: str | None = None,
+        model: str = "gpt-image-1.5",
         prompt: str | None = None,
         quality: str = "high",
         size: str = "auto",
@@ -36,6 +37,7 @@ class OpenAIBackend(EdgeDetectionBackend):
             raise ValueError(
                 "OpenAI API key required. Pass api_key= or set OPENAI_API_KEY env var."
             )
+        self.model = model
         self.prompt = prompt or DEFAULT_PROMPT
         self.quality = quality
         self.size = size
@@ -53,7 +55,7 @@ class OpenAIBackend(EdgeDetectionBackend):
         body = _build_multipart(
             boundary,
             fields={
-                "model": "gpt-image-1.5",
+                "model": self.model,
                 "prompt": self.prompt,
                 "quality": self.quality,
                 "size": self.size,

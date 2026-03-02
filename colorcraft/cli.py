@@ -74,7 +74,12 @@ def main():
     )
     parser.add_argument(
         "--prompt",
-        help="Custom prompt for Stability AI generation",
+        help="Custom prompt for AI generation",
+    )
+    parser.add_argument(
+        "--openai-model",
+        default="gpt-image-1.5",
+        help="OpenAI image model (default: gpt-image-1.5)",
     )
 
     args = parser.parse_args()
@@ -134,7 +139,7 @@ def main():
         if args.prompt:
             backend_kwargs["prompt"] = args.prompt
     elif args.method == "openai":
-        backend_kwargs = {}
+        backend_kwargs = {"model": args.openai_model}
         if args.api_key:
             backend_kwargs["api_key"] = args.api_key
         if args.prompt:
