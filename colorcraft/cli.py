@@ -99,11 +99,15 @@ def main():
     if not args.input:
         parser.error("the following arguments are required: input")
 
-    # Validate input file
+    # Validate input file — fall back to input/ directory
     input_path = Path(args.input)
     if not input_path.exists():
-        print(f"Error: Input file not found: {args.input}", file=sys.stderr)
-        sys.exit(1)
+        input_fallback = Path(__file__).resolve().parent.parent / "input" / args.input
+        if input_fallback.exists():
+            input_path = input_fallback
+        else:
+            print(f"Error: Input file not found: {args.input}", file=sys.stderr)
+            sys.exit(1)
 
     if input_path.suffix.lower() not in SUPPORTED_FORMATS:
         print(

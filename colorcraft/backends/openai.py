@@ -12,12 +12,14 @@ import numpy as np
 from .base import EdgeDetectionBackend
 
 DEFAULT_PROMPT = (
-    "Trace the exact outlines of this image to create a coloring book page for children. "
-    "Do NOT add, remove, or reposition any objects — reproduce the scene exactly as-is. "
-    "Only black outlines on pure white background, "
-    "no shading, no gradients, no gray tones, no filled areas, no solid black regions. "
-    "Every shape must be empty with clean black outlines only. "
-    "Pure black and white only, high contrast line art, simple and clear."
+    "Convert this image into a simple coloring book page for young children. "
+    "Keep the main subject and its overall shape, but drastically simplify the details — "
+    "remove small features, textures, repetitive patterns, and background clutter. "
+    "Use only bold, clean black outlines on a pure white background. "
+    "Leave large empty white areas inside shapes so they are easy to color in. "
+    "No shading, no gradients, no gray tones, no filled areas, no solid black regions. "
+    "Do NOT add, remove, or reposition the main objects — keep the composition, just simplify the lines. "
+    "Think of a coloring page for a 4-year-old: fewer lines, bigger shapes, lots of white space."
 )
 
 
