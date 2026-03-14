@@ -11,16 +11,40 @@ import numpy as np
 
 from .base import EdgeDetectionBackend
 
-DEFAULT_PROMPT = (
-    "Convert this image into a simple coloring book page for young children. "
-    "Keep the main subject and its overall shape, but drastically simplify the details — "
-    "remove small features, textures, repetitive patterns, and background clutter. "
-    "Use only bold, clean black outlines on a pure white background. "
-    "Leave large empty white areas inside shapes so they are easy to color in. "
-    "No shading, no gradients, no gray tones, no filled areas, no solid black regions. "
-    "Do NOT add, remove, or reposition the main objects — keep the composition, just simplify the lines. "
-    "Think of a coloring page for a 4-year-old: fewer lines, bigger shapes, lots of white space."
-)
+AGE_PROMPTS = {
+    "toddler": (
+        "Convert this image into an extremely simple coloring book page for toddlers (ages 2-3). "
+        "Keep only the single main subject with a very basic, chunky outline. "
+        "Remove ALL details, textures, patterns, and background elements. "
+        "Use only very thick, bold black outlines on a pure white background. "
+        "Shapes should be large, rounded, and very easy to color inside. "
+        "No shading, no gradients, no gray tones, no filled areas, no solid black regions. "
+        "Do NOT add, remove, or reposition the main subject — just reduce it to the simplest possible outline. "
+        "Think of a coloring page for a 2-year-old: minimal lines, huge shapes, maximum white space."
+    ),
+    "preschool": (
+        "Convert this image into a simple coloring book page for preschoolers (ages 4-5). "
+        "Keep the main subject and its overall shape, but drastically simplify the details — "
+        "remove small features, textures, repetitive patterns, and background clutter. "
+        "Use only bold, clean black outlines on a pure white background. "
+        "Leave large empty white areas inside shapes so they are easy to color in. "
+        "No shading, no gradients, no gray tones, no filled areas, no solid black regions. "
+        "Do NOT add, remove, or reposition the main objects — keep the composition, just simplify the lines. "
+        "Think of a coloring page for a 4-year-old: fewer lines, bigger shapes, lots of white space."
+    ),
+    "school": (
+        "Convert this image into a coloring book page for school-age children (ages 6+). "
+        "Keep the main subject with moderate detail — preserve interesting features and shapes "
+        "but remove textures, photographic noise, and overly complex patterns. "
+        "Use clean black outlines on a pure white background. "
+        "Include more detail than a toddler page: smaller shapes, more defined features, "
+        "but still clearly a coloring page with empty areas to fill in. "
+        "No shading, no gradients, no gray tones, no filled areas, no solid black regions. "
+        "Do NOT add, remove, or reposition the main objects — keep the composition faithful to the original."
+    ),
+}
+
+DEFAULT_PROMPT = AGE_PROMPTS["preschool"]
 
 
 class OpenAIBackend(EdgeDetectionBackend):

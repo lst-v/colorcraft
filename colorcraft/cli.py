@@ -12,6 +12,15 @@ from .backends import BACKENDS
 SUPPORTED_FORMATS = {".png", ".jpg", ".jpeg", ".bmp", ".tiff"}
 
 
+def _age_to_tier(age: int) -> str:
+    if age <= 3:
+        return "toddler"
+    elif age <= 5:
+        return "preschool"
+    else:
+        return "school"
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Convert images to printable coloring pages for kids."
@@ -73,8 +82,14 @@ def main():
         help="Stability control strength 0.0-1.0 (default: 0.7)",
     )
     parser.add_argument(
+        "--age",
+        type=int,
+        metavar="YEARS",
+        help="Child's age — adjusts complexity (2-3: toddler, 4-5: preschool, 6+: school-age)",
+    )
+    parser.add_argument(
         "--prompt",
-        help="Custom prompt for AI generation",
+        help="Custom prompt for AI generation (overrides --age)",
     )
     parser.add_argument(
         "--openai-model",
@@ -135,6 +150,8 @@ def main():
     elif args.method == "hed":
         backend_kwargs = {"edge_threshold": args.edge_threshold}
     elif args.method == "stability":
+        from .backends.stability import AGE_PROMPTS as STABILITY_AGE_PROMPTS
+
         backend_kwargs = {
             "control_strength": args.control_strength,
         }
@@ -142,12 +159,18 @@ def main():
             backend_kwargs["api_key"] = args.api_key
         if args.prompt:
             backend_kwargs["prompt"] = args.prompt
+        elif args.age is not None:
+            backend_kwargs["prompt"] = STABILITY_AGE_PROMPTS[_age_to_tier(args.age)]
     elif args.method == "openai":
+        from .backends.openai import AGE_PROMPTS as OPENAI_AGE_PROMPTS
+
         backend_kwargs = {"model": args.openai_model}
         if args.api_key:
             backend_kwargs["api_key"] = args.api_key
         if args.prompt:
             backend_kwargs["prompt"] = args.prompt
+        elif args.age is not None:
+            backend_kwargs["prompt"] = OPENAI_AGE_PROMPTS[_age_to_tier(args.age)]
 
     # Convert
     converter = ColoringPageConverter(

@@ -28,6 +28,12 @@ colorcraft <input-image> [options]
 # Using OpenAI (default requires OPENAI_API_KEY)
 colorcraft photo.jpg -m openai
 
+# Adjust complexity for a toddler (ages 2-3: very simple, chunky outlines)
+colorcraft photo.jpg -m openai --age 2
+
+# For a school-age child (ages 6+: more detail)
+colorcraft photo.jpg -m openai --age 7
+
 # Using Stability AI (requires STABILITY_API_KEY)
 colorcraft photo.jpg -m stability
 
@@ -51,8 +57,9 @@ colorcraft photo.jpg -m openai -o my_coloring_page.png
 | `-m`, `--method` | Backend: `canny`, `hed`, `openai`, `stability` | `stability` |
 | `-o`, `--output` | Output file path | `output/<name>_coloring.png` |
 | `-l`, `--line-thickness` | Line thickness 1-5 | `2` |
+| `--age` | Child's age in years — adjusts complexity (2-3: toddler, 4-5: preschool, 6+: school-age) | — |
 | `--api-key` | API key (alternative to env var) | — |
-| `--prompt` | Custom prompt for AI backends | — |
+| `--prompt` | Custom prompt for AI backends (overrides `--age`) | — |
 | `--openai-model` | OpenAI image model | `gpt-image-1.5` |
 | `--control-strength` | Stability control strength 0.0-1.0 | `0.7` |
 | `-t`, `--threshold-low` | Canny low threshold | `50` |

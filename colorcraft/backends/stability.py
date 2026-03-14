@@ -10,13 +10,31 @@ import numpy as np
 
 from .base import EdgeDetectionBackend
 
-DEFAULT_PROMPT = (
-    "Coloring book page for children, only black outlines on pure white background, "
-    "no shading, no gradients, no gray tones, no filled areas, no solid black regions, "
-    "every shape must be empty with clean black outlines only, "
-    "pure black and white only, no off-white, no gray, "
-    "high contrast line art, simple and clear"
-)
+AGE_PROMPTS = {
+    "toddler": (
+        "Extremely simple coloring book page for toddlers ages 2-3, "
+        "only very thick bold black outlines on pure white background, "
+        "minimal detail, huge chunky shapes, no small features, "
+        "no shading, no gradients, no gray tones, no filled areas, no solid black regions, "
+        "pure black and white only, maximum white space"
+    ),
+    "preschool": (
+        "Coloring book page for children, only black outlines on pure white background, "
+        "no shading, no gradients, no gray tones, no filled areas, no solid black regions, "
+        "every shape must be empty with clean black outlines only, "
+        "pure black and white only, no off-white, no gray, "
+        "high contrast line art, simple and clear"
+    ),
+    "school": (
+        "Detailed coloring book page for school-age children ages 6 and up, "
+        "clean black outlines on pure white background with moderate detail, "
+        "preserve interesting features and smaller shapes, "
+        "no shading, no gradients, no gray tones, no filled areas, no solid black regions, "
+        "pure black and white only, high contrast line art"
+    ),
+}
+
+DEFAULT_PROMPT = AGE_PROMPTS["preschool"]
 
 
 class StabilityBackend(EdgeDetectionBackend):
