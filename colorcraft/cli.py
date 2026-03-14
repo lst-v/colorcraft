@@ -33,8 +33,8 @@ def main():
         "-m",
         "--method",
         choices=list(BACKENDS),
-        default="stability",
-        help="Edge detection method (default: stability)",
+        default="openai",
+        help="Edge detection method (default: openai)",
     )
     parser.add_argument(
         "--download",
