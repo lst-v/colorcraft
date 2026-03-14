@@ -137,7 +137,10 @@ def main():
     if args.output:
         output_path = args.output
     else:
-        output_path = str(output_dir / f"{input_path.stem}_coloring.png")
+        suffix = f"_{args.method}"
+        if args.age is not None:
+            suffix += f"_age{args.age}"
+        output_path = str(output_dir / f"{input_path.stem}{suffix}_coloring.png")
 
     # Build backend kwargs based on method
     backend_kwargs = {}
