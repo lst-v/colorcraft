@@ -6,14 +6,16 @@ Supports multiple backends — from local edge detection (Canny, HED) to AI-powe
 
 ## Installation
 
+Requires [uv](https://docs.astral.sh/uv/):
+
 ```bash
-pip install -e .
+uv sync --extra stability
 ```
 
-For API-based backends, install the optional HTTP dependency:
+Or use the `run.sh` wrapper, which handles installation automatically:
 
 ```bash
-pip install -e ".[stability]"
+./run.sh photo.jpg -m canny
 ```
 
 ## Usage
