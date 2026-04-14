@@ -5,6 +5,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+UV_RUN=(uv run --project "$SCRIPT_DIR" --extra stability)
 
 # 1. Check for uv
 if ! command -v uv &>/dev/null; then
@@ -15,7 +16,7 @@ fi
 
 # 2. Show help if no arguments
 if [ $# -eq 0 ]; then
-    exec uv run --project "$SCRIPT_DIR" --extra stability colorcraft --help
+    exec "${UV_RUN[@]}" colorcraft --help
 fi
 
 # 3. Resolve input file — try as-is, then in input/
@@ -28,4 +29,4 @@ if [ ! -f "$INPUT" ]; then
     fi
 fi
 
-exec uv run --project "$SCRIPT_DIR" --extra stability colorcraft "$INPUT" "$@"
+exec "${UV_RUN[@]}" colorcraft "$INPUT" "$@"
