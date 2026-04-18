@@ -1,5 +1,6 @@
 import argparse
 import sys
+import tempfile
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -9,7 +10,19 @@ load_dotenv()
 from .converter import ColoringPageConverter
 from .backends import BACKENDS
 
-SUPPORTED_FORMATS = {".png", ".jpg", ".jpeg", ".bmp", ".tiff"}
+SUPPORTED_FORMATS = {".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".heic", ".heif", ".avif"}
+HEIF_FORMATS = {".heic", ".heif", ".avif"}
+
+
+def _convert_heif_to_png(input_path: Path) -> Path:
+    from pillow_heif import register_heif_opener
+    from PIL import Image
+
+    register_heif_opener()
+    tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+    tmp.close()
+    Image.open(input_path).convert("RGB").save(tmp.name, "PNG")
+    return Path(tmp.name)
 
 
 def _age_to_tier(age: int) -> str:
@@ -126,10 +139,18 @@ def main():
 
     if input_path.suffix.lower() not in SUPPORTED_FORMATS:
         print(
-            f"Error: Unsupported format. Supported: {', '.join(SUPPORTED_FORMATS)}",
+            f"Error: Unsupported format. Supported: {', '.join(sorted(SUPPORTED_FORMATS))}",
             file=sys.stderr,
         )
         sys.exit(1)
+
+    # Convert HEIC/HEIF to a temporary PNG for processing
+    tmp_path = None
+    if input_path.suffix.lower() in HEIF_FORMATS:
+        tmp_path = _convert_heif_to_png(input_path)
+        processing_path = tmp_path
+    else:
+        processing_path = input_path
 
     # Generate output path if not specified
     output_dir = Path(__file__).resolve().parent.parent / "output"
@@ -184,12 +205,15 @@ def main():
 
     try:
         print(f"Converting {args.input} (method: {args.method})...")
-        result = converter.convert(str(input_path))
+        result = converter.convert(str(processing_path))
         converter.save(result, output_path)
         print(f"Saved coloring page to: {output_path}")
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
+    finally:
+        if tmp_path and tmp_path.exists():
+            tmp_path.unlink()
 
 
 if __name__ == "__main__":

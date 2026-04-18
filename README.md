@@ -18,38 +18,43 @@ Or use the `run.sh` wrapper, which handles installation automatically:
 ./run.sh photo.jpg -m canny
 ```
 
+> **Note:** Always use `./run.sh` instead of calling `colorcraft` directly. The bare `colorcraft` command may point to a stale system-level install that lacks the required dependencies.
+
 ## Usage
 
 ```bash
-colorcraft <input-image> [options]
+./run.sh <input-image> [options]
 ```
 
 ### Basic examples
 
 ```bash
 # Using OpenAI (default requires OPENAI_API_KEY)
-colorcraft photo.jpg -m openai
+./run.sh photo.jpg -m openai
 
 # Adjust complexity for a toddler (ages 2-3: very simple, chunky outlines)
-colorcraft photo.jpg -m openai --age 2
+./run.sh photo.jpg -m openai --age 2
 
 # For a school-age child (ages 6+: more detail)
-colorcraft photo.jpg -m openai --age 7
+./run.sh photo.jpg -m openai --age 7
+
+# HEIC/HEIF photos (e.g. straight from iPhone) are supported natively
+./run.sh photo.HEIC -m openai --age 6
 
 # Using Stability AI (requires STABILITY_API_KEY)
-colorcraft photo.jpg -m stability
+./run.sh photo.jpg -m stability
 
 # Using local Canny edge detection (no API key needed)
-colorcraft photo.jpg -m canny
+./run.sh photo.jpg -m canny
 
 # Using HED edge detection (downloads model on first run)
-colorcraft photo.jpg -m hed
+./run.sh photo.jpg -m hed
 ```
 
 Output is saved to the `output/` directory by default. Use `-o` to specify a custom path:
 
 ```bash
-colorcraft photo.jpg -m openai -o my_coloring_page.png
+./run.sh photo.jpg -m openai -o my_coloring_page.png
 ```
 
 ### Options
@@ -87,13 +92,13 @@ Uses OpenAI's image editing API to generate coloring pages. Defaults to `gpt-ima
 
 ```bash
 # Default (best quality)
-colorcraft photo.jpg -m openai
+./run.sh photo.jpg -m openai
 
 # Use gpt-image-1 (cheaper)
-colorcraft photo.jpg -m openai --openai-model gpt-image-1
+./run.sh photo.jpg -m openai --openai-model gpt-image-1
 
 # Use the mini variant (fastest, cheapest)
-colorcraft photo.jpg -m openai --openai-model gpt-image-1-mini
+./run.sh photo.jpg -m openai --openai-model gpt-image-1-mini
 ```
 
 Available models: `gpt-image-1.5`, `gpt-image-1`, `gpt-image-1-mini`.
@@ -111,12 +116,14 @@ Local edge detection using OpenCV's Canny algorithm. Fast, free, no API key need
 Holistically-Nested Edge Detection using a deep learning model. Produces smoother edges than Canny. Requires a one-time model download:
 
 ```bash
-colorcraft --download hed
+./run.sh --download hed
 ```
 
 ## Supported formats
 
-PNG, JPG, JPEG, BMP, TIFF
+PNG, JPG, JPEG, BMP, TIFF, HEIC, HEIF, AVIF
+
+HEIC/HEIF files (e.g. photos taken on iPhone) are converted automatically — no manual pre-conversion needed.
 
 ## License
 
